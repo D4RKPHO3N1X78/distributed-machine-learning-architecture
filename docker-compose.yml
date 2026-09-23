@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # Layer 2 Parameter Server & Layer 1 Gateway Server
+  master:
+    build:
+      context: .
+      dockerfile: Dockerfile.master
+    container_name: dml-parameter-server
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - SYNC_STRATEGY=Parameter Server
+      - COMPRESSION_MODE=None
+    networks:
+      - dml-mesh-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Layer 3 Worker Node 1
+  worker-1:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: dml-worker-1
+    environment:
+      - WORKER_ID=worker-1
+      - MASTER_URL=http://master:8000
+      - NETWORK_LATENCY_MS=12.5
+    depends_on:
+      master:
+        condition: service_healthy
+    networks:
+      - dml-mesh-net
+    command: python worker.py worker-1
+
+  # Layer 3 Worker Node 2
+  worker-2:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: dml-worker-2
+    environment:
+      - WORKER_ID=worker-2
+      - MASTER_URL=http://master:8000
+      - NETWORK_LATENCY_MS=15.0
+    depends_on:
+      master:
+        condition: service_healthy
+    networks:
+      - dml-mesh-net
+    command: python worker.py worker-2
+
+  # Layer 3 Worker Node 3
+  worker-3:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: dml-worker-3
+    environment:
+      - WORKER_ID=worker-3
+      - MASTER_URL=http://master:8000
+      - NETWORK_LATENCY_MS=18.0
+    depends_on:
+      master:
+        condition: service_healthy
+    networks:
+      - dml-mesh-net
+    command: python worker.py worker-3
+
+  # Layer 3 Worker Node 4
+  worker-4:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: dml-worker-4
+    environment:
+      - WORKER_ID=worker-4
+      - MASTER_URL=http://master:8000
+      - NETWORK_LATENCY_MS=14.0
+    depends_on:
+      master:
+        condition: service_healthy
+    networks:
+      - dml-mesh-net
+    command: python worker.py worker-4
+
+networks:
+  dml-mesh-net:
+    driver: bridge

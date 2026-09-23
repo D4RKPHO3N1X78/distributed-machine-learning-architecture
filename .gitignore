@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+node_cache/
+venv/
+.venv/
+env/
+
+# Build & Output
+dist/
+build/
+*.egg-info/
+
+# Python cache & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Environment variables & secrets
+.env
+.env.local
+.env.*.local
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Antigravity artifacts/cache
+.gemini/
